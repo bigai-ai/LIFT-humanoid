@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__
+*.egg-info
+*.log
+.venv
+MUJOCO_LOG.TXT
+mujoco_menagerie
+checkpoints/
+learning/wandb/
+learning/logs/

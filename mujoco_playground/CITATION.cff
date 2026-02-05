@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the following reference:"
+title: "MuJoCo Playground: An open-source framework for GPU-accelerated robot learning and sim-to-real transfer."
+authors:
+  - family-names: Zakka
+    given-names: Kevin
+  - family-names: Tabanpour
+    given-names: Baruch
+  - family-names: Liao
+    given-names: Qiayuan
+  - family-names: Haiderbhai
+    given-names: Mustafa
+  - family-names: Holt
+    given-names: Samuel
+  - family-names: Luo
+    given-names: Jing Yuan
+  - family-names: Allshire
+    given-names: Arthur
+  - family-names: Frey
+    given-names: Erik
+  - family-names: Sreenath
+    given-names: Koushil
+  - family-names: Kahrs
+    given-names: Lueder A.
+  - family-names: Sferrazza
+    given-names: Carlo
+  - family-names: Tassa
+    given-names: Yuval
+  - family-names: Abbeel
+    given-names: Pieter
+year: 2025
+repository-code: "https://github.com/google-deepmind/mujoco_playground"
+url: "https://github.com/google-deepmind/mujoco_playground"
+license: "Apache-2.0"
