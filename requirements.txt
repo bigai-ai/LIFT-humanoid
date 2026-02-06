@@ -37,3 +37,4 @@ omegaconf
 hydra-core
 dill
 jaxopt==0.8.3
+optuna

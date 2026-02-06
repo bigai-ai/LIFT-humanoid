@@ -201,7 +201,7 @@ CUDA_VISIBLE_DEVICES=0 python eval_in_brax.py --env t1 --model models/T1LowDimSi
 ### 3. Pretrain the world model
 ```bash
 # T1 Low-Dim Sim Finetune (flat)
-CUDA_VISIBLE_DEVICES=0 python -u train_wm_from_file.py --env_name=T1LowDimSimFinetuneJoystickFlatTerrain --data_path=/home/weidong/LIFT/logs/T1LowDimSimFinetuneJoystickFlatTerrain-20260202-183009-test  --wandb_entity your_wandb_entity
+CUDA_VISIBLE_DEVICES=0 python -u train_wm_from_file.py --env_name=T1LowDimSimFinetuneJoystickFlatTerrain --data_path=logs/T1LowDimSimFinetuneJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix> --wandb_entity your_wandb_entity
 
 # G1 Low-Dim (flat)
 CUDA_VISIBLE_DEVICES=0 python -u train_wm_from_file.py --env_name=G1LowDimJoystickFlatTerrain --data_path logs/G1LowDimJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix> --wandb_entity your_wandb_entity
@@ -226,7 +226,7 @@ logs/
 CUDA_VISIBLE_DEVICES=0 python finetune.py --env_name=T1LowDimSimFinetuneJoystickFlatTerrain --suffix=sim2sim --ac_training_state_path=logs/T1LowDimSimFinetuneJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix>/policies/policyXXXX.pkl --wm_training_state_path=logs/T1LowDimSimFinetuneJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix>/wm_states/wm_stateXXXXX.pkl --wandb_entity your_wandb_entity
 
 # example:
-CUDA_VISIBLE_DEVICES=1 python finetune.py --env_name=T1LowDimSimFinetuneJoystickFlatTerrain --suffix=sim2sim --ac_training_state_path=models/T1LowDimSimFinetuneJoystickFlatTerrain_policy40009000.pkl --wm_training_state_path=models/T1LowDimSimFinetuneJoystickFlatTerrain_wm_state40.pkl --wandb_entity your_wandb_entity
+CUDA_VISIBLE_DEVICES=0 python finetune.py --env_name=T1LowDimSimFinetuneJoystickFlatTerrain --suffix=sim2sim --ac_training_state_path=models/T1LowDimSimFinetuneJoystickFlatTerrain_policy40009000.pkl --wm_training_state_path=models/T1LowDimSimFinetuneJoystickFlatTerrain_wm_state40.pkl --wandb_entity your_wandb_entity
 
 # G1 Low-Dim (flat) fine-tune
 CUDA_VISIBLE_DEVICES=0 python finetune.py --env_name=G1LowDimJoystickFlatTerrain --suffix=sim2sim --ac_training_state_path=logs/G1LowDimJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix>/policies/policyXXXX.pkl --wm_training_state_path=logs/G1LowDimJoystickFlatTerrain-YYYYmmdd-HHMMSS-<suffix>/wm_states/wm_stateXXXXX.pkl --wandb_entity your_wandb_entity
@@ -263,7 +263,7 @@ Then deploy the TorchScript policy with the **BoosterGym** real-robot deployment
 Use `train_in_mujoco_playground_optuna.py` to tune SAC parameters for any robot/environment.
 You could use the following command for multi-GPU hyperparameter tuning.
 ```bash
-# Example: tune on G1 Low-Dim (flat)
+# Example: tune on T1 Low-Dim (flat)
 CUDA_VISIBLE_DEVICES=0 python train_in_mujoco_playground_optuna.py --env_name=T1LowDimJoystickRoughTerrain --storage=sqlite:///optuna_sac_t1.db --study_name=t1_sac_tuning --sampler=cmaes --domain_randomization --popsize=12
 ```
 
@@ -308,13 +308,13 @@ Thanks to the open-source community for foundational tooling and datasets.
 }
 ```
 
-### FastTD3
+### SSRL
 ```bibtex
-@article{seo2025fasttd3,
-  title={FastTD3: Simple, Fast, and Capable Reinforcement Learning for Humanoid Control},
-  author={Seo, Younggyo and Sferrazza, Carmelo and Geng, Haoran and Nauman, Michal and Yin, Zhao-Heng and Abbeel, Pieter},
-  journal={arXiv preprint arXiv:2505.22642},
-  year={2025}
+@inproceedings{levy2024learning,
+  title={Learning to Walk from Three Minutes of Real-World Data with Semi-structured Dynamics Models},
+  author={Levy, Jacob and Westenbroek, Tyler and Fridovich-Keil, David},
+  booktitle={8th Annual Conference on Robot Learning},
+  year={2024}
 }
 ```
 
