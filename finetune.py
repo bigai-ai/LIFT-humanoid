@@ -175,6 +175,15 @@ _WM_TRAINING_STATE_PATH = flags.DEFINE_string(
 logging.set_verbosity(logging.WARNING)
 
 
+def _sanitize_wandb_entity(entity):
+    if entity is None:
+        return None
+    entity = str(entity).strip()
+    if entity in ("", "xxx", "your_wandb_entity"):
+        return None
+    return entity
+
+
 
 def main(argv):
     del argv
@@ -192,6 +201,7 @@ def main(argv):
     print("JAX devices:", jax.devices())
     print("Local device count:", jax.local_device_count())
     use_wandb = cfg.use_wandb
+    wandb_entity = _sanitize_wandb_entity(cfg.wandb_entity)
     env_kwargs = cfg.finetune_env_config.to_dict()
     eplen = cfg.wm_config.episode_length
     deterministic_eval = cfg.wm_config.deterministic_eval
@@ -209,14 +219,18 @@ def main(argv):
 
     # start wandb
     if use_wandb:
-        # config_dict = OmegaConf.to_container(cfg, resolve=True,
-        #                                      throw_on_missing=True)
-        wandb.init(project=('LIFT_finetune'),
-                   entity=cfg.wandb_entity,
-                   name=exp_name,
-                   config=cfg,
-                   #mode="offline"
-                   )
+        wandb_kwargs = {
+            "project": "LIFT_finetune",
+            "name": exp_name,
+            "config": cfg,
+        }
+        if wandb_entity:
+            wandb_kwargs["entity"] = wandb_entity
+        try:
+            wandb.init(**wandb_kwargs)
+        except Exception as exc:  # login/auth/network issues should not kill training
+            logging.warning("W&B init failed, disabling W&B logging: %s", exc)
+            use_wandb = False
     save_data_dir = os.fspath(logdir)
     os.makedirs(save_data_dir, exist_ok=True)
     generate_data_dir = os.path.join(save_data_dir, "generate_data")

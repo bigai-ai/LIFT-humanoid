@@ -24,6 +24,7 @@ jax.config.update('jax_default_matmul_precision', 'highest')
 jax.config.update("jax_enable_x64", False)
 from datetime import datetime
 import functools
+import inspect
 import json
 
 import time
@@ -136,6 +137,15 @@ _LOG_ALPHA = flags.DEFINE_float("log_alpha", 1e-3, "Log Alpha ")
 _MAX_REPLAY_SIZE = flags.DEFINE_integer("max_replay_size", 1000, "Max replay buffer size")
 
 
+def _sanitize_wandb_entity(entity):
+    if entity is None:
+        return None
+    entity = str(entity).strip()
+    if entity in ("", "xxx", "your_wandb_entity"):
+        return None
+    return entity
+
+
 def main(argv):
     """Run training and evaluation for the specified environment."""
 
@@ -158,6 +168,7 @@ def main(argv):
     wandb_entity = getattr(sac_params, "wandb_entity", None)
     if _WANDB_ENTITY.present:
         wandb_entity = _WANDB_ENTITY.value
+    wandb_entity = _sanitize_wandb_entity(wandb_entity)
 
     if _NUM_TIMESTEPS.present:
         sac_params.num_timesteps = _NUM_TIMESTEPS.value
@@ -225,13 +236,18 @@ def main(argv):
     print(f"Logs are being stored in: {logdir}")
 
     # Initialize Weights & Biases if required
-    if _USE_WANDB.value and not _PLAY_ONLY.value:
+    use_wandb = _USE_WANDB.value and not _PLAY_ONLY.value
+    if use_wandb:
         wandb_kwargs = {"project": "LIFT_policy_pretrain", "name": exp_name}
         if wandb_entity:
             wandb_kwargs["entity"] = wandb_entity
-        wandb.init(**wandb_kwargs)
-        wandb.config.update(env_cfg.to_dict())
-        wandb.config.update({"env_name": _ENV_NAME.value})
+        try:
+            wandb.init(**wandb_kwargs)
+            wandb.config.update(env_cfg.to_dict())
+            wandb.config.update({"env_name": _ENV_NAME.value})
+        except Exception as exc:  # login/auth/network issues should not kill training
+            logging.warning("W&B init failed, disabling W&B logging: %s", exc)
+            use_wandb = False
 
     # Initialize TensorBoard if required
     if _USE_TB.value and not _PLAY_ONLY.value:
@@ -246,11 +262,18 @@ def main(argv):
     with open(ckpt_path / "config.json", "w", encoding="utf-8") as fp:
         json.dump(env_cfg.to_dict(), fp, indent=4)
 
-    training_params = dict(sac_params)
-    if "wandb_entity" in training_params:
-        del training_params["wandb_entity"]
-    if "network_factory" in training_params:
-        del training_params["network_factory"]
+    raw_training_params = dict(sac_params)
+    raw_training_params.pop("wandb_entity", None)
+    raw_training_params.pop("network_factory", None)
+    allowed_train_args = set(inspect.signature(sac.train).parameters.keys())
+    training_params = {
+        k: v for k, v in raw_training_params.items() if k in allowed_train_args
+    }
+    dropped_train_args = sorted(
+        set(raw_training_params.keys()) - set(training_params.keys())
+    )
+    if dropped_train_args:
+        print(f"Ignoring unsupported SAC params: {dropped_train_args}")
 
     if _VISION.value:
         raise ValueError(f"not implement.")
@@ -330,7 +353,7 @@ def main(argv):
     def progress(num_steps, metrics, sac_ts, make_inference_fn, render_reset_rng):
 
         # Log to Weights & Biases
-        if _USE_WANDB.value and not _PLAY_ONLY.value:
+        if use_wandb:
             wandb.log(metrics, step=num_steps)
 
         # Log to TensorBoard
