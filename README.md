@@ -271,13 +271,15 @@ CUDA_VISIBLE_DEVICES=0 python train_in_mujoco_playground_optuna.py --env_name=T1
 ## ⭐ Citation
 If you find this repository helpful, please consider citing:
 ```
-@article{lift,
-  title={Towards Bridging the Gap between Large-Scale Pretraining and Efficient Finetuning for Humanoid Control},
-  author={Weidong Huang and Zhehan Li and Hangxin Liu and Biao Hou and Yao Su and Jingwen Zhang},
-  journal={arXiv preprint arXiv:2601.21363},
-  year={2026},
-  url={https://arxiv.org/abs/2601.21363}
+@inproceedings{
+lifthumanoid,
+title={Towards Bridging the Gap between Large-Scale Pretraining and Efficient Finetuning for Humanoid Control},
+author={Weidong Huang and Zhehan Li and Hangxin Liu and Biao Hou and Yao Su and Jingwen Zhang},
+booktitle={The Fourteenth International Conference on Learning Representations},
+year={2026},
+url={https://openreview.net/forum?id=NEOTsyyYH7}
 }
+
 ```
 
 ---
