@@ -49,7 +49,7 @@ class G1LowDimJoystick(RlwamEnv):
         backend='generalized',
         used_cached_systems=False,
         mini_ankle_dist=0.06,
-        vel_x_command=0.6,
+        vel_x_command=1.5,
         **kwargs
     ):
 
